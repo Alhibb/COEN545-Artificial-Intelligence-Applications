@@ -112,7 +112,7 @@ A web-based AI-powered navigation system for Ahmadu Bello University (ABU) Zaria
 | Name                      | Role                          | GitHub                          |  
 |---------------------------|-------------------------------|---------------------------------|  
 | Usman Gambo Lawal         | Backend & API Integration     | [@UsmanGL](https://github.com/) |  
-| Ibrahim Rabiu             | Mapping Logic                 | [@IbrahimR](https://github.com/alhibb)|  
+| Ibrahim Rabiu             | Mapping Logic                 | [@Alhibb](https://github.com/alhibb)|  
 | Ibrahim AbdulJabbar Hamid | Voice Search Implementation   | [@IbrahimH](https://github.com/)|  
 | Maryam Abdulkadir         | Frontend Design               | [@MaryamA](https://github.com/) |  
 | Maryam D. Shabbal         | Database & Documentation      | [@MaryamS](https://github.com/) |  
@@ -134,11 +134,10 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 ## 📧 Contact  
 For queries or contributions:  
 - **GitHub**: [https://github.com/Alhibb/COEN545-Artificial-Intelligence-Applications](https://github.com/Alhibb/COEN545-Artificial-Intelligence-Applications)  
-- **Team Lead**: Usman Gambo Lawal - u19co20@abu.edu.ng  
+- **Team Lead**: Usman Gambo Lawal - usmangambolawal.gmail.com 
 
 --- 
 
-*Developed for COEN545 Artificial Intelligence Applications, ABU Zaria - 2023*  
+*Developed for COEN545 Artificial Intelligence Applications Group 9, ABU Zaria - March 2025*  
 ```
 
-**Note**: Replace placeholder images (`via.placeholder.com`) with actual screenshots of your application for the final version.
