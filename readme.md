@@ -94,8 +94,7 @@ A web-based AI-powered navigation system for Ahmadu Bello University (ABU) Zaria
    - Type or speak your destination  
    - View real-time walking directions  
 
-![Interface Demo](https://via.placeholder.com/600x400.png?text=Map+Interface+Demo)  
-
+![demo UI](image.png)
 ---
 
 ## 💻 Technologies  
@@ -140,4 +139,3 @@ For queries or contributions:
 
 *Developed for COEN545 Artificial Intelligence Applications Group 9, ABU Zaria - March 2025*  
 ```
-
