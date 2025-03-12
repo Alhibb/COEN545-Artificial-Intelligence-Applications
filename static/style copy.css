@@ -1,0 +1,48 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
+h1, h5 {
+    font-weight: 600;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+}
+
+.card-title i {
+    margin-right: 8px;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+iframe {
+    border-radius: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 20px;
+    }
+    iframe {
+        height: 300px;
+    }
+}

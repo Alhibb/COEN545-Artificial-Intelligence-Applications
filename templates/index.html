@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1 class="text-center mb-4 display-5">{{ campus_name }} Interactive Map</h1>
+    
+    <div class="row g-4">
+        <!-- Search Section -->
+        <div class="col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-search-location"></i> Campus Navigator</h5>
+                    <form method="POST" action="{{ url_for('search') }}" id="searchForm">
+                        <div class="input-group mb-3 position-relative">
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="searchInput" name="query" 
+                                   placeholder="Search location..." 
+                                   autocomplete="off"
+                                   aria-label="Search location">
+                            <button class="btn btn-primary btn-lg" type="submit">
+                                <i class="fas fa-directions"></i>
+                            </button>
+                            <ul id="suggestions"></ul>
+                        </div>
+                        <input type="hidden" id="currentLat" name="current_lat">
+                        <input type="hidden" id="currentLon" name="current_lon">
+                    </form>
+
+                    <div class="d-grid gap-2">
+                        <form method="POST" action="{{ url_for('voice_search') }}">
+                            <input type="hidden" id="voiceLat" name="current_lat">
+                            <input type="hidden" id="voiceLon" name="current_lon">
+                            <button class="btn btn-outline-secondary btn-lg" type="submit" 
+                                    id="voiceButton">
+                                <i class="fas fa-microphone-alt"></i> Voice Search
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Ensure location services are enabled for best experience
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="col-lg-8">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-map-marked-alt"></i> Campus Map</h5>
+                    <div id="mapLoading" class="text-center py-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Calculating best route...</p>
+                    </div>
+                    <div class="map-container">
+                        {{ map_html | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Updates Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-broadcast-tower"></i> Campus Updates</h5>
+                    <div id="updates" class="alert alert-info mb-0">
+                        <i class="fas fa-sync fa-spin me-2"></i> Loading live updates...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Geolocation
+        function handleLocation(position) {
+            const lat = position.coords.latitude.toFixed(6);
+            const lon = position.coords.longitude.toFixed(6);
+            
+            document.querySelectorAll('input[type="hidden"][id$="Lat"]').forEach(el => el.value = lat);
+            document.querySelectorAll('input[type="hidden"][id$="Lon"]').forEach(el => el.value = lon);
+        }
+
+        function showPositionError(error) {
+            console.error('Geolocation error:', error);
+            const alertHTML = `
+                <div class="alert alert-danger mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Location access denied. Using campus center as default.
+                </div>
+            `;
+            document.querySelector('.container').insertAdjacentHTML('afterbegin', alertHTML);
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(handleLocation, showPositionError, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        } else {
+            showPositionError({ message: 'Geolocation is not supported by this browser' });
+        }
+
+        // Advanced Autocomplete
+        const locations = {{ location_names | tojson }};
+        const searchInput = document.getElementById('searchInput');
+        const suggestions = document.getElementById('suggestions');
+
+        function highlightMatch(text, input) {
+            const regex = new RegExp(`(${input})`, 'gi');
+            return text.replace(regex, '<span class="text-primary fw-bold">$1</span>');
+        }
+
+        searchInput.addEventListener('input', function() {
+            const input = this.value.trim().toLowerCase();
+            suggestions.innerHTML = '';
+            
+            if (!input) return;
+
+            const matches = locations.filter(loc => 
+                loc.toLowerCase().includes(input)
+            ).slice(0, 5);
+
+            if (matches.length > 0) {
+                suggestions.style.display = 'block';
+                matches.forEach(location => {
+                    const li = document.createElement('li');
+                    li.className = 'suggestion-item';
+                    li.innerHTML = `
+                        <i class="fas fa-map-marker-alt"></i>
+                        ${highlightMatch(location, input)}
+                    `;
+                    li.onclick = () => {
+                        searchInput.value = location;
+                        suggestions.style.display = 'none';
+                    };
+                    suggestions.appendChild(li);
+                });
+            } else {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        // Loading State Management
+        document.querySelectorAll('form').forEach(form => {
+            form.onsubmit = () => {
+                document.getElementById('mapLoading').style.display = 'block';
+            };
+        });
+
+        // Real-time Updates
+        function fetchUpdates() {
+            fetch('/updates')
+                .then(response => response.json())
+                .then(data => {
+                    const updatesDiv = document.getElementById('updates');
+                    updatesDiv.innerHTML = `
+                        <i class="fas fa-broadcast-tower me-2"></i>
+                        ${data.message}
+                        <span class="float-end text-muted" style="font-size:0.8em">
+                            ${new Date().toLocaleTimeString()}
+                        </span>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('updates').innerHTML = `
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Updates currently unavailable
+                    `;
+                });
+        }
+
+        setInterval(fetchUpdates, 5000);
+        fetchUpdates();
+    </script>
+{% endblock %}
